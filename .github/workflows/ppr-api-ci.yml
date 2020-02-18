@@ -1,34 +1,46 @@
-name: Build and Push Docker Images
+name: Create PPR API Docker Image
 
 on:
   push:
-    branches: [master]
-    paths: ['ppr-api/**']
+#    branches: [master]
+    branches: [deploy_pipeline]
+#    paths: ['ppr-api/**']
 
 jobs:
   ppr-api-image-build:
     runs-on: ubuntu-latest
-    if: github.repository == 'bcgov/ppr'
+#    if: github.repository == 'bcgov/ppr'
+    if: github.repository == 'vituary-solutions/ppr'
     env:
       IMAGE_ID: ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.PPR_API_DOCKER_REPOSITORY }}/ppr-api
       VERSION: ${{ github.run_number }}
 
     steps:
       - uses: actions/checkout@v2
-      - name: Build PPR API Image
-        working-directory: ppr-api
-        run: docker image build . --tag $IMAGE_ID:$VERSION
 
-      - name: Login to Docker Registry
+#      - name: Build PPR API Image
+#        working-directory: ppr-api
+#        run: docker image build . --tag $IMAGE_ID:$VERSION
+#
+#      - name: Login to Docker Registry
+#        env:
+#          REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
+#          TOKEN: ${{ secrets.DOCKER_SA_TOKEN }}
+#          USER: ${{ secrets.DOCKER_SA_NAME}}
+#        run: echo "$TOKEN" | docker login $REGISTRY -u $USER --password-stdin
+#
+#      - name: Push the Image
+#        run: |
+#          # The image should be pushed to the docker repository with both the new version number and as "latest"
+#          docker image push $IMAGE_ID:$VERSION
+#          docker image tag $IMAGE_ID:$VERSION $IMAGE_ID:latest
+#          docker image push $IMAGE_ID:latest
+
+      - name: Send deployment files to Octopus CD (Trigger Release)
+        working-directory: ppr-api/openshift
         env:
-          REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
-          TOKEN: ${{ secrets.DOCKER_SA_TOKEN }}
-          USER: ${{ secrets.DOCKER_SA_NAME}}
-        run: echo "$TOKEN" | docker login $REGISTRY -u $USER --password-stdin
-
-      - name: Push the Image
+          API_KEY: ${{ secrets.OCTOPUS_API_KEY }}
+          ZIP_FILE: deploy-scripts.${{ env.VERSION }}.zip
         run: |
-          # The image should be pushed to the docker repository with both the new version number and as "latest"
-          docker image push $IMAGE_ID:$VERSION
-          docker image tag $IMAGE_ID:$VERSION $IMAGE_ID:latest
-          docker image push $IMAGE_ID:latest
+          zip $ZIP_FILE deploy*.sh ppr-api-dc.*
+          curl -X POST https://bcregistry.octopus.app/api/packages/raw -H "X-Octopus-ApiKey: $API_KEY" -F "data=@$ZIP_FILE"
