@@ -3,7 +3,6 @@ name: Build and Push Docker Images
 on:
   push:
     branches: [correct_dockerfile]
-#    paths: ['ppr-api/**']
 
 jobs:
   ppr-api-image-build:
@@ -12,7 +11,7 @@ jobs:
     env:
       IMAGE_ID: ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.PPR_API_DOCKER_REPOSITORY }}/ppr-api
       VERSION: ${{ github.run_number }}
-#      DOCKER_BUILDKIT: 1
+      # DOCKER_BUILDKIT: 1
 
     steps:
       - uses: actions/checkout@v2
