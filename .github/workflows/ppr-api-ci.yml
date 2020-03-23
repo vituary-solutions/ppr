@@ -12,7 +12,7 @@ jobs:
     env:
       IMAGE_ID: ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.PPR_API_DOCKER_REPOSITORY }}/ppr-api
       VERSION: ${{ github.run_number }}
-      DOCKER_BUILDKIT: 1
+#      DOCKER_BUILDKIT: 1
 
     steps:
       - uses: actions/checkout@v2
