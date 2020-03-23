@@ -3,7 +3,7 @@ name: Build and Push Docker Images
 on:
   push:
     branches: [correct_dockerfile]
-    paths: ['ppr-api/**']
+#    paths: ['ppr-api/**']
 
 jobs:
   ppr-api-image-build:
