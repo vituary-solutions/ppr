@@ -2,7 +2,7 @@ name: Build and Push Docker Images
 
 on:
   push:
-    branches: [master]
+    branches: [correct_dockerfile]
     paths: ['ppr-api/**']
 
 jobs:
@@ -12,6 +12,7 @@ jobs:
     env:
       IMAGE_ID: ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.PPR_API_DOCKER_REPOSITORY }}/ppr-api
       VERSION: ${{ github.run_number }}
+      DOCKER_BUILDKIT: 1
 
     steps:
       - uses: actions/checkout@v2
@@ -29,6 +30,6 @@ jobs:
       - name: Push the Image
         run: |
           # The image should be pushed to the docker repository with both the new version number and as "latest"
-          docker image push $IMAGE_ID:$VERSION
+          # docker image push $IMAGE_ID:$VERSION
           docker image tag $IMAGE_ID:$VERSION $IMAGE_ID:latest
-          docker image push $IMAGE_ID:latest
+          # docker image push $IMAGE_ID:latest
