@@ -1,8 +1,6 @@
 name: Build and Push Docker Images
 
-on:
-  push:
-    branches: [correct_dockerfile]
+on: [push]
 
 jobs:
   ppr-api-image-build:
