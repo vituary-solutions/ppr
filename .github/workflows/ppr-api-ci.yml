@@ -1,11 +1,13 @@
 name: Build and Push Docker Images
 
-on: [push]
+on:
+  push:
+    branches: [correct_dockerfile]
 
 jobs:
   ppr-api-image-build:
     runs-on: ubuntu-latest
-    if: github.repository == 'bcgov/ppr'
+    if: github.repository == 'vituary-solutions/ppr'
     env:
       IMAGE_ID: ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.PPR_API_DOCKER_REPOSITORY }}/ppr-api
       VERSION: ${{ github.run_number }}
